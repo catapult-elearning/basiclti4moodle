@@ -51,6 +51,7 @@ require_once($CFG->dirroot.'/mod/basiclti/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID, or
     $object = optional_param('withobject', false, PARAM_BOOL); // Launch BasicLTI in an object
+    $iframe = true; // SMELL will need to make this a configuration item - this will override $object
 
 if ($id) {
     if (! $cm = $DB->get_record("course_modules", array("id" => $id))) {
@@ -81,5 +82,5 @@ require_login($course);
 
 add_to_log($course->id, "basiclti", "launch", "launch.php?id=$cm->id", "$basiclti->id");
 
-basiclti_view($basiclti, $object);
+basiclti_view($basiclti, $object, $iframe);
 

@@ -122,8 +122,9 @@ if ( $basiclti->launchinpopup > 0 ) {
     if ((!$height) || ($height == 0)) {
         $height = 400;
     }
-    print '<object height="'.$height.'" width="100%" data="launch.php?id='.$cm->id.'&amp;withobject=true"></object>';
-
+    // 
+    //print '<object height="'.$height.'" width="100%" data="launch.php?id='.$cm->id.'&amp;withobject=true"></object>';
+    basiclti_view($basiclti, false, true);
 }
 
 echo $OUTPUT->box_end();

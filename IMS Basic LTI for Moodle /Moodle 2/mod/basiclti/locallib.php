@@ -54,7 +54,7 @@ require_once($CFG->dirroot.'/mod/basiclti/OAuth.php');
  *
  * $param int $basicltiid       Basic LTI activity id
  */
-function basiclti_view($instance, $makeobject=false) {
+function basiclti_view($instance, $makeobject=false, $makeiframe=false) {
     global $PAGE;
 
     $typeconfig = basiclti_get_type_config($instance->typeid);
@@ -79,16 +79,25 @@ function basiclti_view($instance, $makeobject=false) {
     $parms = sign_parameters($requestparams, $endpoint, "POST", $key, $secret, $submittext, $orgid /*, $orgdesc*/);
 
     $debuglaunch = ( $instance->debuglaunch == 1 );
-    if ( $makeobject ) {
-        // TODO: Need frame height
-        $height = $instance->preferheight;
-        if ((!$height) || ($height == 0)) {
-            $height = 400;
-        }
-        $content = post_launch_html($parms, $endpoint, $debuglaunch, $height);
+    
+    if ( $makeiframe ) {
+      // TODO: Need frame height
+      $height = $instance->preferheight;
+      if ( ! $height ) $height = "1200";
+      $content = post_launch_html($parms, $endpoint, $debuglaunch, $height, 
+          "width=\"100%\" height=\"".$height."\" scrolling=\"auto\" frameborder=\"1\" transparency");      
     } else {
-        $content = post_launch_html($parms, $endpoint, $debuglaunch, false);
-    }
+      if ( $makeobject ) {
+          // TODO: Need frame height
+          $height = $instance->preferheight;
+          if ((!$height) || ($height == 0)) {
+              $height = 400;
+          }
+          $content = post_launch_html($parms, $endpoint, $debuglaunch, $height);
+      } else {
+          $content = post_launch_html($parms, $endpoint, $debuglaunch, false);
+      }
+    }  
 //    $cm = get_coursemodule_from_instance("basiclti", $instance->id);
 //    print '<object height='.$height.' width="80%" data="launch.php?id='.$cm->id.'">'.$content.'</object>';
     print $content;
@@ -644,13 +653,19 @@ function sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $oaut
  * @param $endpoint     URL of the external tool
  * @param $debug        Debug (true/false)
  */
-function post_launch_html($newparms, $endpoint, $debug=false, $height=false) {
+function post_launch_html($newparms, $endpoint, $debug=false, $height=false, $iframeattr=false) {
     global $lastbasestring;
-    if ($height) {
-        $r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n";
+    
+    if ( $iframeattr ) {
+        $r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" target=\"basicltiLaunchFrame\" encType=\"application/x-www-form-urlencoded\">\n" ;
     } else {
-        $r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n";
+        $r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n" ;
     }
+    // if ($height) {
+    //     $r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n";
+    // } else {
+    //     $r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n";
+    // }
     $submittext = $newparms['ext_submit'];
 
     // Contruct html for the launch parameters
@@ -699,6 +714,11 @@ function post_launch_html($newparms, $endpoint, $debug=false, $height=false) {
     }
     $r .= "</form>\n";
 
+    if ( $iframeattr ) {
+        $r .= "<iframe name=\"basicltiLaunchFrame\"  id=\"basicltiLaunchFrame\" src=\"\"\n";
+        $r .= $iframeattr . ">\n<p>".get_string("frames_required","basiclti")."</p>\n</iframe>\n";
+    }
+    
     if ( ! $debug ) {
         $ext_submit = "ext_submit";
         $ext_submit_text = $submittext;
