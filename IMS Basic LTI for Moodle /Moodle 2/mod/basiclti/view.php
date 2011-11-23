@@ -112,7 +112,7 @@ echo $OUTPUT->box_start('generalbox activity');
 
 if ( $basiclti->launchinpopup > 0 ) {
     print "<script language=\"javascript\">//<![CDATA[\n";
-    print "window.open('launch.php?id=".$cm->id."','window name');";
+    print "window.open('launch.php?id=".$cm->id."&iframe=0','window_name');";
     print "//]]\n";
     print "</script>\n";
     print "<p>".get_string("basiclti_in_new_window", "basiclti")."</p>\n";
