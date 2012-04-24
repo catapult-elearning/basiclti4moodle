@@ -142,7 +142,7 @@ function xmldb_basiclti_upgrade($oldversion=0) {
         }
         $field = new xmldb_field('setting');
         if (!$dbman->field_exists($table, $field)) {
-            $field->set_attributes(XMLDB_TYPE_CHAR, '8192', null, null, null, '', null);
+            $field->set_attributes(XMLDB_TYPE_CHAR, '1333', null, null, null, '', null);
             $result = $result && $dbman->add_field($table, $field);
         }
 
