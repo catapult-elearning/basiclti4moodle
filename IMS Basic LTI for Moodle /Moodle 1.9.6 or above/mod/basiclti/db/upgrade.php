@@ -156,7 +156,7 @@ function xmldb_basiclti_upgrade($oldversion=0) {
 		$result = $result && add_field($table, $field);
 
 	    $field = new XMLDBField('setting');
-		$field->setAttributes(XMLDB_TYPE_CHAR, '8192', null, null, null, null, null, '', null);
+		$field->setAttributes(XMLDB_TYPE_CHAR, '1333', null, null, null, null, null, '', null);
 		$result = $result && add_field($table, $field);
 
         $field = new XMLDBField('gradesecret');
